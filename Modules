@@ -1,0 +1,50 @@
+'Модуль 01 | Module 01
+'Поиск диапазона в подстроке диапазона | Searching a range within a substring of a range.
+'Создано с помощью ChatGPT
+'Этот VBA макрос предназначен для поиска значений из столбца A на листе "Sheet2" в каждой ячейке столбца C на листе "Sheet1". 
+'Если макрос находит совпадение, он записывает найденное значение в соответствующую ячейку столбца D на листе "Sheet1". 
+'В случае, если совпадение не найдено, в ячейку столбца D записывается текст "не найдено". 
+'Это позволяет определить, какие из искомых значений присутствуют в столбце C, и явным образом указать результат поиска для каждой строки.
+
+'Created with ChatGPT
+'This VBA macro is designed to search for values from column A on the "Sheet2" in each cell of column C on the "Sheet1".
+'If the macro finds a match, it writes the found value into the corresponding cell of column D on the "Sheet1".
+'In case a match is not found, the text "not found" is written into the cell of column D.
+'This allows identifying which of the searched values are present in column C, and explicitly indicates the search result for each row.
+
+
+Sub FindValuesAndOutputResults()
+    Dim wsSource As Worksheet, wsTarget As Worksheet
+    Dim lastRowSource As Long, lastRowTarget As Long, i As Long
+    Dim found As Boolean
+    Dim searchValue As String, foundValue As String
+    
+    ' Настройка рабочих листов | Setting Up Worksheets
+    Set wsSource = ThisWorkbook.Sheets("Sheet2")
+    Set wsTarget = ThisWorkbook.Sheets("Sheet1")
+    
+    ' Определение последней строки в источнике и цели | Determining the last row in source and target
+    lastRowSource = wsSource.Cells(wsSource.Rows.Count, "A").End(xlUp).Row
+    lastRowTarget = wsTarget.Cells(wsTarget.Rows.Count, "C").End(xlUp).Row
+    
+    ' Проход по каждой ячейке в столбце C на Sheet1 | Loop through each cell in Column C on Sheet1
+    For i = 1 To lastRowTarget
+        found = False ' Инициализация флага найденного значения | Initializing the found value flag
+        ' Проход по каждому значению списка в столбце A на Sheet2 | Loop through each list value in column A on Sheet2
+        For Each cell In wsSource.Range("A1:A" & lastRowSource)
+            ' Поиск значения из A в текущей ячейке C на Sheet1 | Finding a value from A in the current cell C on Sheet1
+            If InStr(1, wsTarget.Cells(i, "C").Value, cell.Value) > 0 Then
+                foundValue = cell.Value ' Сохранение найденного значения | Saving the found value
+                found = True ' Установка флага в True | Setting the flag to True
+                Exit For ' Выход из цикла, так как значение найдено | Exit the loop because the value is found
+            End If
+        Next cell
+        
+        ' Вставка результата в столбец D на Sheet1 | Inserting the result into column D on Sheet1
+        If found Then
+            wsTarget.Cells(i, "D").Value = foundValue
+        Else
+            wsTarget.Cells(i, "D").Value = "not found"
+        End If
+    Next i
+End Sub
